@@ -1,0 +1,429 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.10",
+  "parameters": {
+    "DeployName": {
+      "defaultValue": "cvx25",
+      "type": "string"
+    },
+    "virtualMachines_1_admin": {
+      "defaultValue": "Admin3344",
+      "type": "string"
+    },
+    "virtualMachines_1_adminPassword": {
+      "defaultValue": null,
+      "type": "securestring"
+    },
+    "virtualMachines_2_admin": {
+      "defaultValue": "Admin3344",
+      "type": "string"
+    },
+    "virtualMachines_2_adminPassword": {
+      "defaultValue": null,
+      "type": "securestring"
+    },
+    "sql_server_admin": {
+      "defaultValue": "Admin3344",
+      "type": "string"
+    },
+    "sql_server_pass": {
+      "defaultValue": null,
+      "type": "securestring"
+    }
+  },
+  "variables": { },
+  "resources": [
+    {
+      "comments": "Availability Sets 5 and 3",
+      "type": "Microsoft.Compute/availabilitySets",
+      "name": "[concat('aset',parameters('DeployName'))]",
+      "apiVersion": "2015-06-15",
+      "location": "[resourceGroup().location]",
+      "tags": { },
+      "properties": {
+        "platformUpdateDomainCount": 5,
+        "platformFaultDomainCount": 3
+      },
+      "resources": [ ],
+      "dependsOn": [ ]
+    },
+    {
+      "comments": "Storage Account sacvx251southcentral",
+      "type": "Microsoft.Storage/storageAccounts",
+      "sku": {
+        "name": "Standard_LRS",
+        "tier": "Standard"
+      },
+      "kind": "Storage",
+      "name": "[concat('sa',parameters('DeployName'))]",
+      "apiVersion": "2016-01-01",
+      "location": "[resourceGroup().location]",
+      "tags": { },
+      "properties": { },
+      "resources": [ ],
+      "dependsOn": [ ]
+    },
+    {
+      "comments": "Network Security Group allow only CVX",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "[concat('nsg',parameters('DeployName'))]",
+      "apiVersion": "2016-03-30",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "securityRules": [
+          {
+            "name": "allowCVXRDP",
+            "properties": {
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "3389",
+              "sourceAddressPrefix": "146.0.0.0/16",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 100,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "denyNonCVX",
+            "properties": {
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Deny",
+              "priority": 750,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "allowCVX",
+            "properties": {
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "146.0.0.0/16",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 500,
+              "direction": "Inbound"
+            }
+          }
+        ]
+      },
+      "resources": [ ],
+      "dependsOn": [ ]
+    },
+    {
+      "comments": "Public IP",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[concat('ippub',parameters('DeployName'),'1')]",
+      "apiVersion": "2016-03-30",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic",
+        "idleTimeoutInMinutes": 4
+      },
+      "resources": [ ],
+      "dependsOn": [ ]
+    },
+    {
+      "comments": "VNet",
+      "type": "Microsoft.Network/virtualNetworks",
+      "name": "[concat('vnet',parameters('DeployName'))]",
+      "apiVersion": "2016-03-30",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "10.2.0.0/16"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[concat('sub',parameters('DeployName'))]",
+            "properties": {
+              "addressPrefix": "10.2.0.0/24"
+            }
+          }
+        ]
+      },
+      "dependsOn": [ ]
+    },
+    {
+      "comments": "load Balancer",
+      "type": "Microsoft.Network/loadBalancers",
+      "name": "[concat('lb',parameters('DeployName'))]",
+      "apiVersion": "2016-03-30",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "frontendIPConfigurations": [
+          {
+            "name": "LoadBalancerFrontEnd",
+            "properties": {
+              "privateIPAddress": "10.2.0.4",
+              "privateIPAllocationMethod": "Dynamic",
+              "subnet": {
+                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks',concat('vnet',parameters('DeployName'))),'/subnets/sub',parameters('DeployName'))]"
+              }
+            }
+          }
+        ],
+        "backendAddressPools": [ ],
+        "loadBalancingRules": [ ],
+        "probes": [ ],
+        "inboundNatRules": [ ],
+        "outboundNatRules": [ ],
+        "inboundNatPools": [ ]
+      },
+      "resources": [ ],
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks',concat('vnet',parameters('DeployName')))]"
+      ]
+    },
+    {
+      "comments": "Nic1 vmcvx25-1513",
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[concat('nic',parameters('DeployName'),'1')]",
+      "apiVersion": "2016-03-30",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAddress": "10.2.0.5",
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat('ippub',parameters('DeployName'),'1'))]"
+              },
+              "subnet": {
+                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks',concat('vnet',parameters('DeployName'))),'/subnets/sub',parameters('DeployName'))]"
+              }
+            }
+          }
+        ],
+        "dnsSettings": {
+          "dnsServers": [ ]
+        },
+        "enableIPForwarding": false,
+        "networkSecurityGroup": {
+          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', concat('nsg',parameters('DeployName')))]"
+        }
+      },
+      "resources": [ ],
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses',  concat('ippub',parameters('DeployName'),'1'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks', concat('vnet',parameters('DeployName')))]",
+        "[resourceId('Microsoft.Network/networkSecurityGroups', concat('nsg',parameters('DeployName')))]"
+      ]
+    },
+    {
+      "comments": "Nic2 vmcvx25-2862",
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[concat('nic',parameters('DeployName'),'2')]",
+      "apiVersion": "2016-03-30",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAddress": "10.2.0.6",
+              "privateIPAllocationMethod": "Dynamic",
+              "subnet": {
+                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks',concat('vnet',parameters('DeployName'))),'/subnets/sub',parameters('DeployName'))]"
+              }
+            }
+          }
+        ],
+        "dnsSettings": {
+          "dnsServers": [ ]
+        },
+        "enableIPForwarding": false,
+        "networkSecurityGroup": {
+          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', concat('nsg',parameters('DeployName')))]"
+        }
+      },
+      "resources": [ ],
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', concat('vnet',parameters('DeployName')))]",
+        "[resourceId('Microsoft.Network/networkSecurityGroups', concat('nsg',parameters('DeployName')))]"
+      ]
+    },
+    {
+      "comments": "VM1",
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[concat('vm',parameters('DeployName'),'1')]",
+      "apiVersion": "2015-06-15",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "availabilitySet": {
+          "id": "[resourceId('Microsoft.Compute/availabilitySets', concat('aset',parameters('DeployName')))]"
+        },
+        "hardwareProfile": {
+          "vmSize": "Standard_D1"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "2012-R2-Datacenter",
+            "version": "latest"
+          },
+          "osDisk": {
+            "name": "[concat('vm',parameters('DeployName'),'1')]",
+            "createOption": "FromImage",
+            "vhd": {
+              "uri": "[concat('https://rgsn30003disks831.blob.core.windows.net/vhds/', concat('vm',parameters('DeployName'),'1'),'201692223130.vhd')]"
+            },
+            "caching": "ReadWrite"
+          },
+          "dataDisks": [ ]
+        },
+        "osProfile": {
+          "computerName": "[concat('vm',parameters('DeployName'),'1')]",
+          "adminUsername": "[parameters('virtualMachines_1_admin')]",
+          "windowsConfiguration": {
+            "provisionVMAgent": true,
+            "enableAutomaticUpdates": true
+          },
+          "secrets": [ ],
+          "adminPassword": "[parameters('virtualMachines_1_adminPassword')]"
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat('nic',parameters('DeployName'),'1'))]"
+            }
+          ]
+        }
+      },
+      "resources": [ ],
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/availabilitySets', concat('aset',parameters('DeployName')))]",
+        "[resourceId('Microsoft.Network/networkInterfaces',concat('nic',parameters('DeployName'),'1'))]"
+      ]
+    },
+    {
+      "comments": "VM2",
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[concat('vm',parameters('DeployName'),'2')]",
+      "apiVersion": "2015-06-15",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "availabilitySet": {
+          "id": "[resourceId('Microsoft.Compute/availabilitySets', concat('aset',parameters('DeployName')))]"
+        },
+        "hardwareProfile": {
+          "vmSize": "Standard_D1"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "2012-R2-Datacenter",
+            "version": "latest"
+          },
+          "osDisk": {
+            "name": "[concat('vm',parameters('DeployName'),'2')]",
+            "createOption": "FromImage",
+            "vhd": {
+              "uri": "[concat('https://rgsn30003disks831.blob.core.windows.net/vhds/', concat('vm',parameters('DeployName'),'2'),'201692223387.vhd')]"
+            },
+            "caching": "ReadWrite"
+          },
+          "dataDisks": [ ]
+        },
+        "osProfile": {
+          "computerName": "[concat('vm',parameters('DeployName'),'2')]",
+          "adminUsername": "[parameters('virtualMachines_2_admin')]",
+          "windowsConfiguration": {
+            "provisionVMAgent": true,
+            "enableAutomaticUpdates": true
+          },
+          "secrets": [ ],
+          "adminPassword": "[parameters('virtualMachines_2_adminPassword')]"
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat('nic',parameters('DeployName'),'2'))]"
+            }
+          ]
+        }
+      },
+      "resources": [ ],
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/availabilitySets', concat('aset',parameters('DeployName')))]",
+        "[resourceId('Microsoft.Network/networkInterfaces', concat('nic',parameters('DeployName'),'2'))]"
+      ]
+    },
+    {
+      "name": "[toLower(concat('dbsrv',parameters('DeployName')))]",
+      "comments": "SQL Server",
+      "type": "Microsoft.Sql/servers",
+      "kind": "v12.0",
+      "apiVersion": "2014-04-01-preview",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "administratorLogin": "[parameters('sql_server_admin')]",
+        "administratorLoginPassword": "[parameters('sql_server_pass')]",
+        "version": "12.0"
+      },
+      "resources": [
+        {
+          "name": "firewallAllowAllAzureIp",
+          "type": "firewallrules",
+          "apiVersion": "2014-04-01-preview",
+          "location": "[resourceGroup().location]",
+          "comments": "SQL Firewall Rules AllowAllWindowsAzureIps",
+          "properties": {
+            "startIpAddress": "0.0.0.0",
+            "endIpAddress": "0.0.0.0"
+          },
+          "dependsOn": [
+            "[resourceId('Microsoft.Sql/servers', toLower(concat('dbsrv',parameters('DeployName'))))]"
+          ]
+        },
+        {
+          "name": "[toLower(concat('dbsrv',parameters('DeployName'),'2'))]",
+          "type": "databases",
+          "kind": "v12.0,user",
+          "apiVersion": "2014-04-01-preview",
+          "location": "[resourceGroup().location]",
+          "comments": "dbcvx252 with AdventureWorks",
+          "properties": {
+            "edition": "Standard",
+            "maxSizeBytes": "268435456000",
+            "requestedServiceObjectiveName": "S2"
+          },
+          "dependsOn": [
+            "[resourceId('Microsoft.Sql/servers', toLower(concat('dbsrv',parameters('DeployName'))))]"
+          ]
+        },
+        {
+          "comments": "SQL Database dbCVXdb251 with Adventureworks",
+          "type": "databases",
+          "kind": "v12.0,user",
+          "name": "[toLower(concat('dbsrv',parameters('DeployName'),'1'))]",
+          "apiVersion": "2014-04-01-preview",
+          "location": "[resourceGroup().location]",
+          "properties": {
+            "edition": "Standard",
+            "serviceLevelObjective": "S2",
+            "maxSizeBytes": "268435456000",
+            "requestedServiceObjectiveName": "S2"
+          },
+          "resources": [ ],
+          "dependsOn": [
+            "[resourceId('Microsoft.Sql/servers', toLower(concat('dbsrv',parameters('DeployName'))))]"
+          ]
+        }
+
+      ],
+      "dependsOn": [ ]
+    }
+  ]
+}
