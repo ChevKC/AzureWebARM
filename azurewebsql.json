@@ -23,22 +23,13 @@
     "skuCapacity": {
       "type": "int",
       "defaultValue": 1,
-      "minValue": 1,
-      "metadata": {
-        "description": "Describes plan's instance count"
-      }
+      "minValue": 1
     },
     "sqlAdministratorLogin": {
-      "type": "string",
-      "metadata": {
-        "description": "The admin user of the SQL Server"
-      }
+      "type": "string"
     },
     "sqlAdministratorLoginPassword": {
-      "type": "securestring",
-      "metadata": {
-        "description": "The password of the admin user of the SQL Server"
-      }
+      "type": "securestring"
     }
   },
   "variables": {
