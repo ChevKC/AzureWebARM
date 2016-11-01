@@ -22,8 +22,7 @@
     },
     "skuCapacity": {
       "type": "int",
-      "defaultValue": 1,
-      "minValue": 1
+      "defaultValue": 1
     },
     "sqlAdministratorLogin": {
       "type": "string"
