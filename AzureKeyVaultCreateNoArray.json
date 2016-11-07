@@ -21,8 +21,8 @@
       }
     },
     "keysPermissions": {
-      "type": "array",
-      "defaultValue": [],
+      "type": "string",
+      "defaultValue": "",
       "metadata": {
         "description": "Permissions to keys in the vault. Valid values are: all, create, import, update, get, list, delete, backup, restore, encrypt, decrypt, wrapkey, unwrapkey, sign, and verify."
       }
