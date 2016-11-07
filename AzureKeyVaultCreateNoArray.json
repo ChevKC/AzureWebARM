@@ -17,7 +17,7 @@
     "objectId": {
       "type": "string",
       "metadata": {
-        "description": "Object Id of the AD user. Get using Get-AzureRmADUser or Get-AzureRmADServicePrincipal cmdlets"
+        "description": "Object Id of the AD user. Get using Get-AzureRmADUser or Get-AzureRmADServicePrincipal cmdlet-s"
       }
     },
     "keysPermissions": {
