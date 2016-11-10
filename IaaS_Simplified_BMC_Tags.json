@@ -30,10 +30,10 @@
       "defaultValue": null,
       "type": "securestring"
     },
-	"HLBO": {
+      "HLBO": {
       "type": "string",
-	  "defaultValue": "0845"
-	}
+      "defaultValue": "0845"
+    }
   },
   "variables": { },
   "resources": [
@@ -464,11 +464,11 @@
   ],
   "outputs": {
     "VM1": {
-      "type": "object",
+      "type": "string",
       "value": "[reference(concat('Microsoft.Compute/virtualMachines','vm',parameters('DeployName'),'1'))]"
     },
     "VM2": {
-      "type": "object",
+      "type": "string",
       "value": "[reference(concat('Microsoft.Compute/virtualMachines','vm',parameters('DeployName'),'2')) ]"
     }
   }
