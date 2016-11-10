@@ -32,18 +32,7 @@
     },
 	"HLBO": {
       "type": "string",
-	  "defaultValue": "0845",
-      "allowedValues": [
-        "0845",
-        "3333",
-        "4444",
-        "5555",
-        "6666",
-        "7777",
-        "8888",
-        "9999",
-        "1111"
-      ]
+	  "defaultValue": "0845"
 	}
   },
   "variables": { },
