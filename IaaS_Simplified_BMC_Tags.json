@@ -54,13 +54,13 @@
       "name": "[concat('aset',parameters('DeployName'))]",
       "apiVersion": "2015-06-15",
       "location": "[resourceGroup().location]",
-      "tags": { },
+      "tags": {},
       "properties": {
         "platformUpdateDomainCount": 5,
         "platformFaultDomainCount": 3
       },
-      "resources": [ ],
-      "dependsOn": [ ]
+      "resources": [],
+      "dependsOn": []
     },
     {
       "comments": "Storage Account sacvx251southcentral",
@@ -76,9 +76,9 @@
       "tags": {
         "HLBO": "[parameters('HLBO')]"
       },
-      "properties": { },
-      "resources": [ ],
-      "dependsOn": [ ]
+      "properties": {},
+      "resources": [],
+      "dependsOn": []
     },
     {
       "comments": "Network Security Group allow only CVX",
@@ -88,7 +88,7 @@
       "location": "[resourceGroup().location]",
       "tags": {
         "HLBO": "[parameters('HLBO')]"
-      },	  
+      },
       "properties": {
         "securityRules": [
           {
@@ -132,8 +132,8 @@
           }
         ]
       },
-      "resources": [ ],
-      "dependsOn": [ ]
+      "resources": [],
+      "dependsOn": []
     },
     {
       "comments": "Public IP",
@@ -143,13 +143,13 @@
       "location": "[resourceGroup().location]",
       "tags": {
         "HLBO": "[parameters('HLBO')]"
-      },	  
+      },
       "properties": {
         "publicIPAllocationMethod": "Dynamic",
         "idleTimeoutInMinutes": 4
       },
-      "resources": [ ],
-      "dependsOn": [ ]
+      "resources": [],
+      "dependsOn": []
     },
     {
       "comments": "VNet",
@@ -172,7 +172,7 @@
           }
         ]
       },
-      "dependsOn": [ ]
+      "dependsOn": []
     },
     {
       "comments": "load Balancer",
@@ -182,7 +182,7 @@
       "location": "[resourceGroup().location]",
       "tags": {
         "HLBO": "[parameters('HLBO')]"
-      },	  
+      },
       "properties": {
         "frontendIPConfigurations": [
           {
@@ -196,14 +196,14 @@
             }
           }
         ],
-        "backendAddressPools": [ ],
-        "loadBalancingRules": [ ],
-        "probes": [ ],
-        "inboundNatRules": [ ],
-        "outboundNatRules": [ ],
-        "inboundNatPools": [ ]
+        "backendAddressPools": [],
+        "loadBalancingRules": [],
+        "probes": [],
+        "inboundNatRules": [],
+        "outboundNatRules": [],
+        "inboundNatPools": []
       },
-      "resources": [ ],
+      "resources": [],
       "dependsOn": [
         "[resourceId('Microsoft.Network/virtualNetworks',concat('vnet',parameters('DeployName')))]"
       ]
@@ -216,7 +216,7 @@
       "location": "[resourceGroup().location]",
       "tags": {
         "HLBO": "[parameters('HLBO')]"
-      },	  
+      },
       "properties": {
         "ipConfigurations": [
           {
@@ -234,14 +234,14 @@
           }
         ],
         "dnsSettings": {
-          "dnsServers": [ ]
+          "dnsServers": []
         },
         "enableIPForwarding": false,
         "networkSecurityGroup": {
           "id": "[resourceId('Microsoft.Network/networkSecurityGroups', concat('nsg',parameters('DeployName')))]"
         }
       },
-      "resources": [ ],
+      "resources": [],
       "dependsOn": [
         "[resourceId('Microsoft.Network/publicIPAddresses',  concat('ippub',parameters('DeployName'),'1'))]",
         "[resourceId('Microsoft.Network/virtualNetworks', concat('vnet',parameters('DeployName')))]",
@@ -256,7 +256,7 @@
       "location": "[resourceGroup().location]",
       "tags": {
         "HLBO": "[parameters('HLBO')]"
-      },	  
+      },
       "properties": {
         "ipConfigurations": [
           {
@@ -271,14 +271,14 @@
           }
         ],
         "dnsSettings": {
-          "dnsServers": [ ]
+          "dnsServers": []
         },
         "enableIPForwarding": false,
         "networkSecurityGroup": {
           "id": "[resourceId('Microsoft.Network/networkSecurityGroups', concat('nsg',parameters('DeployName')))]"
         }
       },
-      "resources": [ ],
+      "resources": [],
       "dependsOn": [
         "[resourceId('Microsoft.Network/virtualNetworks', concat('vnet',parameters('DeployName')))]",
         "[resourceId('Microsoft.Network/networkSecurityGroups', concat('nsg',parameters('DeployName')))]"
@@ -292,7 +292,7 @@
       "location": "[resourceGroup().location]",
       "tags": {
         "HLBO": "[parameters('HLBO')]"
-      },	  
+      },
       "properties": {
         "availabilitySet": {
           "id": "[resourceId('Microsoft.Compute/availabilitySets', concat('aset',parameters('DeployName')))]"
@@ -315,7 +315,7 @@
             },
             "caching": "ReadWrite"
           },
-          "dataDisks": [ ]
+          "dataDisks": []
         },
         "osProfile": {
           "computerName": "[concat('vm',parameters('DeployName'),'1')]",
@@ -324,7 +324,7 @@
             "provisionVMAgent": true,
             "enableAutomaticUpdates": true
           },
-          "secrets": [ ],
+          "secrets": [],
           "adminPassword": "[parameters('virtualMachines_1_adminPassword')]"
         },
         "networkProfile": {
@@ -335,7 +335,7 @@
           ]
         }
       },
-      "resources": [ ],
+      "resources": [],
       "dependsOn": [
         "[resourceId('Microsoft.Compute/availabilitySets', concat('aset',parameters('DeployName')))]",
         "[resourceId('Microsoft.Network/networkInterfaces',concat('nic',parameters('DeployName'),'1'))]"
@@ -349,7 +349,7 @@
       "location": "[resourceGroup().location]",
       "tags": {
         "HLBO": "[parameters('HLBO')]"
-      },	  
+      },
       "properties": {
         "availabilitySet": {
           "id": "[resourceId('Microsoft.Compute/availabilitySets', concat('aset',parameters('DeployName')))]"
@@ -372,7 +372,7 @@
             },
             "caching": "ReadWrite"
           },
-          "dataDisks": [ ]
+          "dataDisks": []
         },
         "osProfile": {
           "computerName": "[concat('vm',parameters('DeployName'),'2')]",
@@ -381,7 +381,7 @@
             "provisionVMAgent": true,
             "enableAutomaticUpdates": true
           },
-          "secrets": [ ],
+          "secrets": [],
           "adminPassword": "[parameters('virtualMachines_2_adminPassword')]"
         },
         "networkProfile": {
@@ -392,7 +392,7 @@
           ]
         }
       },
-      "resources": [ ],
+      "resources": [],
       "dependsOn": [
         "[resourceId('Microsoft.Compute/availabilitySets', concat('aset',parameters('DeployName')))]",
         "[resourceId('Microsoft.Network/networkInterfaces', concat('nic',parameters('DeployName'),'2'))]"
@@ -407,7 +407,7 @@
       "location": "[resourceGroup().location]",
       "tags": {
         "HLBO": "[parameters('HLBO')]"
-      },	  
+      },
       "properties": {
         "administratorLogin": "[parameters('sql_server_admin')]",
         "administratorLoginPassword": "[parameters('sql_server_pass')]",
@@ -436,7 +436,7 @@
           "location": "[resourceGroup().location]",
           "tags": {
             "HLBO": "[parameters('HLBO')]"
-          },		  
+          },
           "comments": "dbcvx252 with AdventureWorks",
           "properties": {
             "edition": "Standard",
@@ -456,21 +456,31 @@
           "location": "[resourceGroup().location]",
           "tags": {
             "HLBO": "[parameters('HLBO')]"
-          },		  
+          },
           "properties": {
             "edition": "Standard",
             "serviceLevelObjective": "S2",
             "maxSizeBytes": "268435456000",
             "requestedServiceObjectiveName": "S2"
           },
-          "resources": [ ],
+          "resources": [],
           "dependsOn": [
             "[resourceId('Microsoft.Sql/servers', toLower(concat('dbsrv',parameters('DeployName'))))]"
           ]
         }
 
       ],
-      "dependsOn": [ ]
+      "dependsOn": []
     }
-  ]
+  ],
+  "outputs": {
+    "VM1": {
+      "type": "object",
+      "value": [ "reference('concat('vm',parameters('DeployName'),'1')')" ]
+    },
+    "VM2": {
+      "type": "object",
+      "value": [ "reference('concat('vm',parameters('DeployName'),'2')')" ]
+    }
+  }
 }
