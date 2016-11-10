@@ -476,11 +476,11 @@
   "outputs": {
     "VM1": {
       "type": "object",
-      "value": [ "reference(concat('vm',parameters('DeployName'),'1'))" ]
+      "value": "[reference(concat('Microsoft.Compute/virtualMachines','vm',parameters('DeployName'),'1'))]"
     },
     "VM2": {
       "type": "object",
-      "value": [ "reference(concat('vm',parameters('DeployName'),'2'))" ]
+      "value": "[reference(concat('Microsoft.Compute/virtualMachines','vm',parameters('DeployName'),'2')) ]"
     }
   }
 }
