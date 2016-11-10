@@ -311,7 +311,7 @@
             "name": "[concat('vm',parameters('DeployName'),'1')]",
             "createOption": "FromImage",
             "vhd": {
-              "uri": "[concat('https://rgsn30003disks831.blob.core.windows.net/vhds/', concat('vm',parameters('DeployName'),'1'),'201692223130.vhd')]"
+              "uri": "[concat('https://','sa',parameters('DeployName'),'.blob.core.windows.net/vhds/vm',parameters('DeployName'),'1','201692223130.vhd')]"
             },
             "caching": "ReadWrite"
           },
@@ -368,7 +368,7 @@
             "name": "[concat('vm',parameters('DeployName'),'2')]",
             "createOption": "FromImage",
             "vhd": {
-              "uri": "[concat('https://rgbmc30003disks831.blob.core.windows.net/vhds/', concat('vm',parameters('DeployName'),'2'),'201692223387.vhd')]"
+              "uri": "[concat('https://','sa',parameters('DeployName'),'.blob.core.windows.net/vhds/vm',parameters('DeployName'),'2','201692223137.vhd')]"
             },
             "caching": "ReadWrite"
           },
