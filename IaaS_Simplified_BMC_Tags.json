@@ -461,15 +461,5 @@
       ],
       "dependsOn": []
     }
-  ],
-  "outputs": {
-    "VM1": {
-      "type": "string",
-      "value": "[reference(concat('Microsoft.Compute/virtualMachines','/vm',parameters('DeployName'),'1'))]"
-    },
-    "VM2": {
-      "type": "string",
-      "value": "[reference(concat('Microsoft.Compute/virtualMachines','/vm',parameters('DeployName'),'2')) ]"
-    }
-  }
+  ]
 }
