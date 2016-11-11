@@ -1,0 +1,39 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2014-04-01-preview/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "type": "string"
+        },
+        "sku": {
+            "type": "string",
+            "allowedValues": [
+                "D1",
+                "S1",
+                "S2",
+                "S4"
+            ]
+        },
+        "admin": {
+            "type": "string"
+        }
+    },
+    "resources": [
+        {
+            "apiVersion": "2016-05-16",
+            "name": "[parameters('name')]",
+            "location": "South Central US",
+            "type": "Microsoft.AnalysisServices/servers",
+            "sku": {
+                "name": "[parameters('sku')]"
+            },
+            "properties": {
+                "asAdministrators": {
+                    "members": [
+                        "[parameters('admin')]"
+                    ]
+                }
+            }
+        }
+    ]
+}
